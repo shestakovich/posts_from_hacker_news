@@ -6,7 +6,7 @@ from hacker_news_posts.models import Post
 
 
 class Command(BaseCommand):
-    help = 'Closes the specified poll for voting'
+    help = 'Upload news from news.ycombinator.com'
 
     def handle(self, *args, **options):
 

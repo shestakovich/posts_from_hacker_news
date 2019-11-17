@@ -1,6 +1,11 @@
+from django import forms
+from django.core.exceptions import ValidationError
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render
+from rest_framework.exceptions import ParseError
 from rest_framework.generics import ListAPIView
 
+from hacker_news_posts.forms import ParamsForm
 from hacker_news_posts.models import Post
 from hacker_news_posts.serializers import PostSerializer
 
@@ -11,10 +16,16 @@ class PostsListView(ListAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        params = self.request.GET
-        order = params.get('order')
-        if order:
-            queryset = queryset.order_by(order)
-        offset = int(params.get('offset', 0))
-        limit = int(params.get('limit', 5))
-        return queryset[offset:offset+limit]
+        form = ParamsForm(self.request.GET)
+
+        if form.is_valid():
+            order = form.cleaned_data.get('order')
+            if order:
+                queryset = queryset.order_by(order)
+
+            offset = form.cleaned_data.get('offset') or 0
+            limit = form.cleaned_data.get('limit') or 5
+            return queryset[offset:offset+limit]
+
+        else:
+            raise ParseError(form.errors)
