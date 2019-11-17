@@ -10,9 +10,6 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt ./requirements.txt
 RUN pip install -r ./requirements.txt
 
-# copy docker-entrypoint.sh
-COPY ./docker-entrypoint.sh ./docker-entrypoint.sh
-
 # copy project
 COPY . .
 
